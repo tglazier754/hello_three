@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import "./mouseControl";
+import * as Utils from "./utils";
 
 
 const loader = new GLTFLoader();
@@ -10,14 +12,30 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 //const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);
-camera.position.set(0, 0, 100);
+camera.position.set(0, 30, 100);
 //camera.lookAt(0, 0, 0);
-const light = new THREE.AmbientLight(0x606060); // soft white light
+const light = new THREE.AmbientLight(0xa0a0a0); // soft white light
 theScene.add(light);
 const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
 theScene.add(directionalLight);
 
-let zPos = 100;
+window.addEventListener("camerarotate", (e) => {
+    const delta = e.detail;
+    theScene.rotation.y += delta.x / 100;
+    theScene.rotation.x += delta.y / 100;
+});
+
+window.addEventListener("camerapan", (e) => {
+    const delta = e.detail;
+    camera.position.x += -delta.x / 10;
+    camera.position.y += delta.y / 10;
+})
+
+window.addEventListener("wheel", (e) => {
+    console.log(e.deltaY);
+    camera.position.z += -e.deltaY / 20;
+})
+
 
 function createCube() {
     const geometry = new THREE.BoxGeometry(1, 1, 1);
@@ -52,22 +70,11 @@ function loadModel(path, scene) {
     });
 }
 
-const theCube = createCube();
-theScene.add(theCube);
-
-const theLine = createLine();
-theScene.add(theLine);
 
 loadModel("./public/low_australian_shepherd.glb", theScene);
 
-window.addEventListener("wheel", (e) => {
-    console.log(e.deltaY);
-    zPos += e.deltaY / 20;
-})
 
 function animate() {
     renderer.render(theScene, camera);
-    rotateCube(theCube);
-    camera.position.z = zPos;
 }
 renderer.setAnimationLoop(animate);
