@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import "./mouseControl";
-import * as Utils from "./utils";
 
 
 const loader = new GLTFLoader();
